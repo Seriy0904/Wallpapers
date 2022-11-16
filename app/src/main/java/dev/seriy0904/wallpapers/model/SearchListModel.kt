@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class SearchListModel(
     @SerializedName("data")
     val imageList: List<Data>,
-    val meta: Meta
+    val meta: Meta? = null
 )
 
 data class Data(
