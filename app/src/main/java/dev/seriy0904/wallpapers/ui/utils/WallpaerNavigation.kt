@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 
 const val TOPLIST_ROUTE = "toplist"
 const val LATEST_ROUTE = "latest"
+const val SELECTED_ROUTE = "selected"
 class WallpaerNavigationActions(navController:NavHostController){
     val navigateToTopList: () -> Unit = {
         navController.navigate(TOPLIST_ROUTE) {
@@ -23,5 +24,8 @@ class WallpaerNavigationActions(navController:NavHostController){
             launchSingleTop = true
             restoreState = true
         }
+    }
+    val navigateToSelected: (id: String) -> Unit = {id->
+        navController.navigate("$SELECTED_ROUTE/$id")
     }
 }

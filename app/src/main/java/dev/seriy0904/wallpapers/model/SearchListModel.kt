@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 data class SearchListModel(
     @SerializedName("data")
-    val imageList: List<Data>,
-    val meta: Meta? = null
+    val dataList: List<Data>,
+    val meta: Meta
 )
 
 data class Data(
@@ -30,12 +30,12 @@ data class Data(
 )
 
 data class Meta(
-    val current_page: Int,
-    val last_page: Int,
-    val per_page: Int,
-    val query: String,
-    val seed: Any,
-    val total: Int
+    val current_page: Int = 0,
+    val last_page: Int = 0,
+    val per_page: Int = 0,
+    val query: String = "",
+    val seed: Any = "D",
+    val total: Int = 0
 )
 
 data class Thumbs(

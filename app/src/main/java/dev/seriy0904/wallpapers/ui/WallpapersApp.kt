@@ -61,7 +61,7 @@ fun Wallpapers(retrofit: WallhavenApi) {
             }
         ) { scaffoldPadding ->
             Box(Modifier.padding(scaffoldPadding)) {
-                SetupNavGraph(navController = navController,retrofit = retrofit)
+                SetupNavGraph(navController = navController,retrofit = retrofit, navigationActions = navigationActions)
             }
         }
     }
