@@ -1,32 +1,18 @@
-package dev.seriy0904.wallpapers.ui.viewModel
+package dev.seriy0904.wallpapers.ui.toplist
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import dev.seriy0904.wallpapers.data.api.WallhavenApi
-import dev.seriy0904.wallpapers.model.ImageDetailsModel
-import dev.seriy0904.wallpapers.model.Meta
 import dev.seriy0904.wallpapers.model.SearchListModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ListViewModel(private val retrofit: WallhavenApi) : ViewModel() {
+class TopistViewModel(private val retrofit: WallhavenApi) : ViewModel() {
     private val _topList = MutableLiveData<SearchListModel>(null)
     val topList = _topList
-    fun updateLatestList() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = retrofit.search()
-            try {
-                if (request.isSuccessful){
-                    _topList.postValue(request.body() ?: SearchListModel(listOf(), Meta()))
-                }else
-                    TODO("Request error")
-            }catch (e:java.lang.Exception){
-                Log.d("MyTag",e.message.toString())
-            }
-        }
-    }
+
     fun firstTopListLoad(){
         if(_topList.value==null){
             updateTopList()
@@ -39,21 +25,6 @@ class ListViewModel(private val retrofit: WallhavenApi) : ViewModel() {
             try {
                 if (request.isSuccessful){
                     _topList.postValue(request.body())
-                }
-            }catch (e:java.lang.Exception){
-                Log.d("MyTag",e.message.toString())
-            }
-        }
-    }
-
-
-
-    fun loadImageInfo(imageId:String, endLoading:(ImageDetailsModel?)->Unit){
-        CoroutineScope(Dispatchers.IO).launch {
-            val request = retrofit.imageDetails(imageId = imageId)
-            try {
-                if (request.body()!=null){
-                    endLoading(request.body())
                 }
             }catch (e:java.lang.Exception){
                 Log.d("MyTag",e.message.toString())

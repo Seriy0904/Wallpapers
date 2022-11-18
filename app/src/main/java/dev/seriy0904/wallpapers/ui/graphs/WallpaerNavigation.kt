@@ -1,15 +1,16 @@
-package dev.seriy0904.wallpapers.ui.utils
+package dev.seriy0904.wallpapers.ui.graphs
 
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import android.util.Log
 import androidx.navigation.NavHostController
 
 const val TOPLIST_ROUTE = "toplist"
 const val LATEST_ROUTE = "latest"
-const val SELECTED_ROUTE = "selected"
-class WallpaerNavigationActions(navController:NavHostController){
+const val SELECTED_IMAGE_ROUTE = "details"
+
+class WallpaerNavigationActions(navController: NavHostController) {
     val navigateToTopList: () -> Unit = {
         navController.navigate(TOPLIST_ROUTE) {
-            popUpTo(navController.graph.findStartDestination().id) {
+            popUpTo(TOPLIST_ROUTE) {
                 saveState = true
             }
             launchSingleTop = true
@@ -18,14 +19,17 @@ class WallpaerNavigationActions(navController:NavHostController){
     }
     val navigateToLatest: () -> Unit = {
         navController.navigate(LATEST_ROUTE) {
-            popUpTo(navController.graph.findStartDestination().id) {
+            popUpTo(TOPLIST_ROUTE) {
                 saveState = true
+//                inclusive = true
             }
             launchSingleTop = true
             restoreState = true
         }
     }
-    val navigateToSelected: (id: String) -> Unit = {id->
-        navController.navigate("$SELECTED_ROUTE/$id")
+
+    val navigateToSelectedImage: (id: String) -> Unit = { id ->
+        Log.d("MyTag", "navigateToSelectedImage")
+        navController.navigate("$SELECTED_IMAGE_ROUTE/$id")
     }
 }
