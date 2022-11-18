@@ -35,15 +35,18 @@ fun Wallpapers(retrofit: WallhavenApi) {
         val coroutineScope = rememberCoroutineScope()
         val scaffoldState = rememberScaffoldState()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = remember { mutableStateOf(navBackStackEntry?.destination?.route?: TOPLIST_ROUTE)}
-        Log.d("MyTag", "App route${ currentRoute }")
+        val appDrawerRoute = remember { mutableStateOf("") }
+        val route = navBackStackEntry?.destination?.route?: TOPLIST_ROUTE
+        val currentRoute = if(items.contains(route)) route else appDrawerRoute.value
+        Log.d("MyTag", "appDrawerRoute ${ appDrawerRoute.value }")
+        Log.d("MyTag", "route ${ route }")
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
                     title = {
                         Text(
-                            text = when (currentRoute.value) {
+                            text = when (currentRoute) {
                                 TOPLIST_ROUTE -> stringResource(id = R.string.topList_label)
                                 LATEST_ROUTE -> stringResource(id = R.string.latest_label)
                                 else -> stringResource(id = R.string.app_name)
@@ -64,10 +67,11 @@ fun Wallpapers(retrofit: WallhavenApi) {
             drawerContent = {
                 AppDrawer(
                     navigationActions = navigationActions,
-                    currentRoute = currentRoute.value,
+                    currentRoute = currentRoute,
                     items = items
                 ) {
-                    if(items.contains(currentRoute.value)) currentRoute.value = it
+                    if(!items.contains(appDrawerRoute.value)) appDrawerRoute.value = it
+                    Log.d("MyTag", "AppDrawer lambda ${ it }")
                     coroutineScope.launch { scaffoldState.drawerState.close() }
                 }
             }

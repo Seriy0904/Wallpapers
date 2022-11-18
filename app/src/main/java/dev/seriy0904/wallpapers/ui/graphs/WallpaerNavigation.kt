@@ -1,6 +1,5 @@
 package dev.seriy0904.wallpapers.ui.graphs
 
-import android.util.Log
 import androidx.navigation.NavHostController
 
 const val TOPLIST_ROUTE = "toplist"
@@ -29,7 +28,6 @@ class WallpaerNavigationActions(navController: NavHostController) {
     }
 
     val navigateToSelectedImage: (id: String) -> Unit = { id ->
-        Log.d("MyTag", "navigateToSelectedImage")
         navController.navigate("$SELECTED_IMAGE_ROUTE/$id")
     }
 }
