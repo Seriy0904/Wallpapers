@@ -1,6 +1,5 @@
 package dev.seriy0904.wallpapers.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -35,11 +34,9 @@ fun Wallpapers(retrofit: WallhavenApi) {
         val coroutineScope = rememberCoroutineScope()
         val scaffoldState = rememberScaffoldState()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val appDrawerRoute = remember { mutableStateOf("") }
+        val appDrawerRoute = remember { mutableStateOf(TOPLIST_ROUTE) }
         val route = navBackStackEntry?.destination?.route?: TOPLIST_ROUTE
         val currentRoute = if(items.contains(route)) route else appDrawerRoute.value
-        Log.d("MyTag", "appDrawerRoute ${ appDrawerRoute.value }")
-        Log.d("MyTag", "route ${ route }")
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
@@ -70,8 +67,7 @@ fun Wallpapers(retrofit: WallhavenApi) {
                     currentRoute = currentRoute,
                     items = items
                 ) {
-                    if(!items.contains(appDrawerRoute.value)) appDrawerRoute.value = it
-                    Log.d("MyTag", "AppDrawer lambda ${ it }")
+                    appDrawerRoute.value = it
                     coroutineScope.launch { scaffoldState.drawerState.close() }
                 }
             }

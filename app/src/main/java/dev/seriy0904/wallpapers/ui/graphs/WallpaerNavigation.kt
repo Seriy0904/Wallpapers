@@ -1,5 +1,6 @@
 package dev.seriy0904.wallpapers.ui.graphs
 
+import android.util.Log
 import androidx.navigation.NavHostController
 
 const val TOPLIST_ROUTE = "toplist"
@@ -15,19 +16,21 @@ class WallpaerNavigationActions(navController: NavHostController) {
             launchSingleTop = true
             restoreState = true
         }
+        Log.d("MyTag","back Queue${ navController.backQueue.map { it.destination.route }.toList() }")
     }
     val navigateToLatest: () -> Unit = {
         navController.navigate(LATEST_ROUTE) {
             popUpTo(TOPLIST_ROUTE) {
                 saveState = true
-//                inclusive = true
             }
             launchSingleTop = true
             restoreState = true
         }
+        Log.d("MyTag","back Queue${ navController.backQueue.map { it.destination.route }.toList() }")
     }
 
     val navigateToSelectedImage: (id: String) -> Unit = { id ->
         navController.navigate("$SELECTED_IMAGE_ROUTE/$id")
+        Log.d("MyTag","back Queue${ navController.backQueue.map { it.destination.route }.toList() }")
     }
 }
