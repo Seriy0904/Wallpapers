@@ -7,41 +7,50 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.google.gson.Gson
 import dev.seriy0904.wallpapers.data.api.WallhavenApi
+import dev.seriy0904.wallpapers.model.FiltersModel
+import dev.seriy0904.wallpapers.ui.customList.CustomListScreen
+import dev.seriy0904.wallpapers.ui.customList.CustomListViewModel
+import dev.seriy0904.wallpapers.ui.customList.CustomListViewModelProvider
 import dev.seriy0904.wallpapers.ui.imageDetails.ImageDetailsScreen
 import dev.seriy0904.wallpapers.ui.imageDetails.ImageDetailsViewModel
 import dev.seriy0904.wallpapers.ui.imageDetails.ImageDetailsViewModelProvider
-import dev.seriy0904.wallpapers.ui.latest.LatestListViewModel
-import dev.seriy0904.wallpapers.ui.latest.LatestListViewModelProvider
-import dev.seriy0904.wallpapers.ui.latest.LatestScreen
-import dev.seriy0904.wallpapers.ui.toplist.TopistViewModel
-import dev.seriy0904.wallpapers.ui.toplist.ToplistScreen
-import dev.seriy0904.wallpapers.ui.toplist.ToplistViewModelProvider
 
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
-    startDestination: String = TOPLIST_ROUTE,
+    startDestination: String = Screen.CustomList.route,
     retrofit: WallhavenApi,
-    navigationActions: WallpaerNavigationActions
+    navigationActions: WallpaperNavigationActions
 ) {
-    val topListViewModel: TopistViewModel = viewModel(factory = ToplistViewModelProvider(retrofit))
-    val latestListViewModel: LatestListViewModel = viewModel(factory = LatestListViewModelProvider(retrofit))
-    val imageDetailsViewModel: ImageDetailsViewModel = viewModel(factory = ImageDetailsViewModelProvider(retrofit))
-    topListViewModel.firstTopListLoad()
-    latestListViewModel.firstLatesListLoad()
+    val imageDetailsViewModel: ImageDetailsViewModel =
+        viewModel(factory = ImageDetailsViewModelProvider(retrofit))
+    val customListViewModel: CustomListViewModel =
+        viewModel(factory = CustomListViewModelProvider(retrofit))
     NavHost(navController = navController, startDestination = startDestination) {
-        composable(route = TOPLIST_ROUTE) {
-            ToplistScreen(topListViewModel,navigationActions)
-        }
-        composable(route = LATEST_ROUTE) {
-            LatestScreen(latestListViewModel,navigationActions)
+        composable(Screen.CustomList.route,
+            arguments = listOf(navArgument("filter") {
+                type = NavType.StringType
+                defaultValue = ""
+            })
+        ) {
+            val argFilter = it.arguments?.getString("filter")?:""
+            val filterModel = Gson().fromJson(argFilter,FiltersModel::class.java)?:FiltersModel()
+            CustomListScreen(customListViewModel, navigationActions,filterModel)
         }
         composable(
-            "$SELECTED_IMAGE_ROUTE/{imageId}",
+            Screen.ImageDetails.route,
             arguments = listOf(navArgument("imageId") { type = NavType.StringType })
         ) {
-            ImageDetailsScreen(imageId = it.arguments?.getString( "imageId")?:"", viewModel = imageDetailsViewModel,navigationActions = navigationActions)
+            val imageId = it.arguments?.getString("imageId")
+            imageId?.let {
+                ImageDetailsScreen(
+                    imageId = imageId,
+                    viewModel = imageDetailsViewModel,
+                    navigationActions = navigationActions
+                )
+            }
         }
     }
 }

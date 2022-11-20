@@ -1,36 +1,35 @@
 package dev.seriy0904.wallpapers.ui.graphs
 
-import android.util.Log
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
+import dev.seriy0904.wallpapers.model.FiltersModel
 
-const val TOPLIST_ROUTE = "toplist"
-const val LATEST_ROUTE = "latest"
-const val SELECTED_IMAGE_ROUTE = "details"
+sealed class Screen(val route: String){
+    object CustomList: Screen("custom_list?filter={filter}"){
+        fun passId(filter:String):String{
+            return "custom_list?filter=$filter"
+        }
+    }
+    object ImageDetails: Screen("image_details/{imageId}"){
+        fun passId(id:String):String{
+            return "image_details/$id"
+        }
+    }
+}
 
-class WallpaerNavigationActions(navController: NavHostController) {
-    val navigateToTopList: () -> Unit = {
-        navController.navigate(TOPLIST_ROUTE) {
-            popUpTo(TOPLIST_ROUTE) {
-                saveState = true
+class WallpaperNavigationActions(private val navController: NavHostController) {
+    fun navigateToCustomList (searchFilter:FiltersModel=FiltersModel()){
+        val codeSearchFilter = Gson().toJson(searchFilter)
+        navController.navigate(Screen.CustomList.passId(codeSearchFilter)) {
+            popUpTo(Screen.CustomList.route){
+                inclusive = true
             }
             launchSingleTop = true
             restoreState = true
         }
-        Log.d("MyTag","back Queue${ navController.backQueue.map { it.destination.route }.toList() }")
-    }
-    val navigateToLatest: () -> Unit = {
-        navController.navigate(LATEST_ROUTE) {
-            popUpTo(TOPLIST_ROUTE) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-        Log.d("MyTag","back Queue${ navController.backQueue.map { it.destination.route }.toList() }")
     }
 
-    val navigateToSelectedImage: (id: String) -> Unit = { id ->
-        navController.navigate("$SELECTED_IMAGE_ROUTE/$id")
-        Log.d("MyTag","back Queue${ navController.backQueue.map { it.destination.route }.toList() }")
+    fun navigateToSelectedImage (id: String){
+        navController.navigate(Screen.ImageDetails.passId(id))
     }
 }

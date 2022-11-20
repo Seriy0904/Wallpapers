@@ -1,4 +1,4 @@
-package dev.seriy0904.wallpapers.ui.latest;
+package dev.seriy0904.wallpapers.ui.customList;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import dev.seriy0904.wallpapers.data.api.WallhavenApi;
 
-public class LatestListViewModelProvider implements ViewModelProvider.Factory {
+public class CustomListViewModelProvider implements ViewModelProvider.Factory {
     private final WallhavenApi retrofit;
-    public LatestListViewModelProvider(WallhavenApi _retrofit){
+    public CustomListViewModelProvider(WallhavenApi _retrofit){
         retrofit = _retrofit;
     }
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new LatestListViewModel(retrofit);
+        return (T) new CustomListViewModel(retrofit);
     }
 }

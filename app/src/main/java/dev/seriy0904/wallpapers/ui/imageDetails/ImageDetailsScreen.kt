@@ -1,6 +1,8 @@
 package dev.seriy0904.wallpapers.ui.imageDetails
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,13 +16,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.flowlayout.FlowRow
 import dev.seriy0904.wallpapers.model.ImageDetailsModel
 import dev.seriy0904.wallpapers.model.Tag
-import dev.seriy0904.wallpapers.ui.graphs.WallpaerNavigationActions
+import dev.seriy0904.wallpapers.ui.graphs.WallpaperNavigationActions
+
 
 private const val loadingText = "LOADING"
 
@@ -28,8 +34,10 @@ private const val loadingText = "LOADING"
 fun ImageDetailsScreen(
     imageId: String,
     viewModel: ImageDetailsViewModel,
-    navigationActions: WallpaerNavigationActions
+    navigationActions: WallpaperNavigationActions
 ) {
+    val clipboardManager = LocalClipboardManager.current
+    val mContext = LocalContext.current
     val imageDetails: MutableState<ImageDetailsModel?> = remember { mutableStateOf(null) }
     val imageUrl = imageDetails.value?.data?.path ?: ""
     val uploaderImageUrl = imageDetails.value?.data?.uploader?.avatar?.`128px` ?: ""
@@ -68,11 +76,19 @@ fun ImageDetailsScreen(
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = imageDetails.value?.data?.id ?: loadingText,
+                    text = imageId,
                     color = MaterialTheme.colors.onPrimary,
                     modifier = Modifier
                         .background(MaterialTheme.colors.primaryVariant)
                         .padding(3.dp)
+                        .clickable {
+                            Toast.makeText(
+                                mContext,
+                                "$imageId saved to clipboard",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            clipboardManager.setText(AnnotatedString(imageId))
+                        }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))

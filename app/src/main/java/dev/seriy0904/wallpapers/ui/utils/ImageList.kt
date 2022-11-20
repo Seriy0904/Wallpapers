@@ -20,7 +20,8 @@ fun ImageList(listModel: SearchListModel?, onClickImage: (id: String) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(128.dp),
         Modifier
-            .padding(horizontal = 6.dp, vertical = 10.dp)
+            .padding(horizontal = 6.dp)
+            .padding(bottom = 10.dp)
             .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)

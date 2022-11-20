@@ -10,13 +10,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import dev.seriy0904.wallpapers.R
-import dev.seriy0904.wallpapers.ui.graphs.LATEST_ROUTE
-import dev.seriy0904.wallpapers.ui.graphs.TOPLIST_ROUTE
-import dev.seriy0904.wallpapers.ui.graphs.WallpaerNavigationActions
+import dev.seriy0904.wallpapers.ui.graphs.Screen
+import dev.seriy0904.wallpapers.ui.graphs.WallpaperNavigationActions
 
 @Composable
 fun AppDrawer(
-    navigationActions: WallpaerNavigationActions,
+    navigationActions: WallpaperNavigationActions,
     currentRoute: String,
     items: List<String>,
     closeDrawer: (String) -> Unit
@@ -29,17 +28,13 @@ fun AppDrawer(
         items.forEachIndexed() { pos, it ->
             DrawerItem(
                 tittle = when (it) {
-                    TOPLIST_ROUTE -> stringResource(id = R.string.topList_label)
-                    LATEST_ROUTE -> stringResource(id = R.string.latest_label)
+                    Screen.CustomList.route -> stringResource(id = R.string.custom_list_label)
                     else -> ""
                 }, it == currentRoute
             ) {
                 when (it) {
-                    TOPLIST_ROUTE -> {
-                        navigationActions.navigateToTopList()
-                    }
-                    LATEST_ROUTE -> {
-                        navigationActions.navigateToLatest()
+                    Screen.CustomList.route -> {
+                        navigationActions.navigateToCustomList()
                     }
                 }
                 closeDrawer(it)
@@ -71,7 +66,7 @@ fun DrawerItem(tittle: String, isSelected: Boolean, action: () -> Unit) {
 @Composable
 fun PreviewAppDrawer() {
     AppDrawer(
-        navigationActions = WallpaerNavigationActions(rememberNavController()),
+        navigationActions = WallpaperNavigationActions(rememberNavController()),
         currentRoute = "toplist",
         items = listOf("Toplist", "Latest")
     ) {}

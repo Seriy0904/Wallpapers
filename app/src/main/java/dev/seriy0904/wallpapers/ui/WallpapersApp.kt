@@ -12,10 +12,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.seriy0904.wallpapers.R
 import dev.seriy0904.wallpapers.data.api.WallhavenApi
-import dev.seriy0904.wallpapers.ui.graphs.LATEST_ROUTE
+import dev.seriy0904.wallpapers.ui.graphs.Screen
 import dev.seriy0904.wallpapers.ui.graphs.SetupNavGraph
-import dev.seriy0904.wallpapers.ui.graphs.TOPLIST_ROUTE
-import dev.seriy0904.wallpapers.ui.graphs.WallpaerNavigationActions
+import dev.seriy0904.wallpapers.ui.graphs.WallpaperNavigationActions
 import dev.seriy0904.wallpapers.ui.theme.WallpapersTheme
 import dev.seriy0904.wallpapers.ui.utils.AppDrawer
 import kotlinx.coroutines.launch
@@ -25,28 +24,28 @@ fun Wallpapers(retrofit: WallhavenApi) {
     WallpapersTheme {
         val navController = rememberNavController()
         val navigationActions = remember(navController) {
-            WallpaerNavigationActions(navController)
+            WallpaperNavigationActions(navController)
         }
         val items = listOf(
-            TOPLIST_ROUTE,
-            LATEST_ROUTE
+            Screen.CustomList.route
         )
         val coroutineScope = rememberCoroutineScope()
         val scaffoldState = rememberScaffoldState()
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val appDrawerRoute = remember { mutableStateOf(TOPLIST_ROUTE) }
-        val route = navBackStackEntry?.destination?.route?: TOPLIST_ROUTE
-        val currentRoute = if(items.contains(route)) route else appDrawerRoute.value
+        var appDrawerRoute by remember { mutableStateOf(items.first()) }
+        val route = navBackStackEntry?.destination?.route?: items.first()
+        val currentRoute = if(items.contains(route)) route else appDrawerRoute
+        if(currentRoute!=appDrawerRoute) appDrawerRoute = currentRoute
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
                     title = {
                         Text(
-                            text = when (currentRoute) {
-                                TOPLIST_ROUTE -> stringResource(id = R.string.topList_label)
-                                LATEST_ROUTE -> stringResource(id = R.string.latest_label)
-                                else -> stringResource(id = R.string.app_name)
+                            text = when  {
+                                route.startsWith(Screen.CustomList.route) -> stringResource(id = R.string.custom_list_label)
+                                route.startsWith(Screen.ImageDetails.route) -> stringResource(id = R.string.image_details_label)
+                                else -> "Wallpapers"
                             }
                         )
                     },
@@ -67,7 +66,7 @@ fun Wallpapers(retrofit: WallhavenApi) {
                     currentRoute = currentRoute,
                     items = items
                 ) {
-                    appDrawerRoute.value = it
+                    appDrawerRoute = it
                     coroutineScope.launch { scaffoldState.drawerState.close() }
                 }
             }

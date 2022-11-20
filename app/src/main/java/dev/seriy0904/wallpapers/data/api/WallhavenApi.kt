@@ -7,17 +7,19 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-const val WALLHAVEN_URL:String = "https://wallhaven.cc"
+const val WALLHAVEN_URL: String = "https://wallhaven.cc"
+
 interface WallhavenApi {
     @GET("/api/v1/search")
     suspend fun search(
         @Query("q") querySettings: String = "",
-        @Query("page") page: Int = 1,
-        @Query("sorting") sort: String = "date_added"
+        @Query("categories") category: String = "111",
+        @Query("sorting") sort: String = "date_added",
+        @Query("page") page: Int = 1
     ): Response<SearchListModel>
 
     @GET("/api/v1/w/{id}")
     suspend fun imageDetails(
-        @Path("id") imageId:String
+        @Path("id") imageId: String
     ): Response<ImageDetailsModel>
 }

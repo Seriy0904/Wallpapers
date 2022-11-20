@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Wallpapers</string>
+    <string name="custom_list_label">Image List</string>
+    <string name="image_details_label">Image Details</string>
+    <string name="user_details_label">User Details</string>
     <string name="topList_label">Toplist</string>
     <string name="latest_label">Latest</string>
 </resources>
