@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.flowlayout.FlowRow
+import dev.seriy0904.wallpapers.model.FiltersModel
 import dev.seriy0904.wallpapers.model.ImageDetailsModel
 import dev.seriy0904.wallpapers.model.Tag
 import dev.seriy0904.wallpapers.ui.graphs.WallpaperNavigationActions
@@ -133,14 +134,16 @@ fun ImageDetailsScreen(
                     fontSize = 20.sp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                TagsGrid(imageDetails.value?.data?.tags ?: listOf())
+                TagsGrid(imageDetails.value?.data?.tags ?: listOf()){
+                    navigationActions.navigateToCustomList(FiltersModel(tags = it))
+                }
             }
         }
     }
 }
 
 @Composable
-fun TagsGrid(tags: List<Tag>) {
+fun TagsGrid(tags: List<Tag>, onClickAction: (String)->Unit) {
     FlowRow() {
         tags.forEach { tag ->
             Text(
@@ -148,7 +151,7 @@ fun TagsGrid(tags: List<Tag>) {
                 Modifier
                     .padding(3.dp)
                     .background(MaterialTheme.colors.primaryVariant, MaterialTheme.shapes.small)
-                    .padding(2.dp),
+                    .padding(2.dp).clickable { onClickAction(tag.name) },
                 color = MaterialTheme.colors.onPrimary
             )
         }

@@ -1,5 +1,6 @@
 package dev.seriy0904.wallpapers.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -9,7 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dev.seriy0904.wallpapers.R
 import dev.seriy0904.wallpapers.data.api.WallhavenApi
 import dev.seriy0904.wallpapers.ui.graphs.Screen
@@ -19,10 +20,11 @@ import dev.seriy0904.wallpapers.ui.theme.WallpapersTheme
 import dev.seriy0904.wallpapers.ui.utils.AppDrawer
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Wallpapers(retrofit: WallhavenApi) {
     WallpapersTheme {
-        val navController = rememberNavController()
+        val navController = rememberAnimatedNavController()
         val navigationActions = remember(navController) {
             WallpaperNavigationActions(navController)
         }

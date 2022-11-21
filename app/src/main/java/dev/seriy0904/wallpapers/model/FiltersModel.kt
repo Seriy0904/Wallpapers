@@ -7,7 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class FiltersModel(
     var categories: String = "111",
     var purity: String = "100",
-    var sorting: String = "date_added",
+    var sorting: String = "toplist",
     var order: String = "desc",
     var topRange: String = "1M",
     var atleast: String = "",
@@ -15,6 +15,7 @@ data class FiltersModel(
     var ratios: String = "",
     var colors: String = "",
     var page: Int = 1,
+    var tags:String = ""
 ) : Parcelable
 
 val sortingList: List<String> =

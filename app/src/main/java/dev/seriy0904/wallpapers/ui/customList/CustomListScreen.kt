@@ -4,19 +4,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.seriy0904.wallpapers.model.*
+import dev.seriy0904.wallpapers.model.FiltersModel
+import dev.seriy0904.wallpapers.model.categoriesList
+import dev.seriy0904.wallpapers.model.sortingDestinations
+import dev.seriy0904.wallpapers.model.sortingList
 import dev.seriy0904.wallpapers.ui.graphs.WallpaperNavigationActions
 import dev.seriy0904.wallpapers.ui.utils.ImageList
 
@@ -26,12 +33,12 @@ fun CustomListScreen(
     navigationActions: WallpaperNavigationActions,
     filter: FiltersModel = FiltersModel()
 ) {
-    val customFilter by remember { mutableStateOf(filter) }
     Column {
+        val searchModel by viewModel.customList.observeAsState()
+        val customFilter by remember { mutableStateOf(filter) }
         LazyRow(
             verticalAlignment = CenterVertically,
-            modifier = Modifier
-                .height(40.dp).padding(4.dp)
+            modifier = Modifier.padding(4.dp)
         ) {
             item {
                 Icon(
@@ -40,26 +47,27 @@ fun CustomListScreen(
                     contentDescription = "Refresh list with filters",
                     modifier = Modifier
                         .clickable {
-                            navigationActions.navigateToCustomList(customFilter)
+                            viewModel.customListLoad(filter)
                         }
                         .size(34.dp)
                         .padding(end = 6.dp)
                 )
+                SearchTag(){
+                    customFilter.tags = it
+                }
+                Spacer(modifier = Modifier.width(6.dp))
                 SortingDropDownMenu(customFilter.sorting, sortingList, sortingDestinations) {
                     customFilter.sorting = it
                 }
                 Spacer(modifier = Modifier.width(6.dp))
-                CategoriesDropDownMenu(customFilter.categories, categoriesList) {
+                CategoriesCheckBoxes(customFilter.categories, categoriesList) {
                     customFilter.categories = it
                 }
             }
         }
-        var searchModel by remember { mutableStateOf<SearchListModel?>(null) }
-        if (searchModel != null) {
-            ImageList(searchModel) {
-                navigationActions.navigateToSelectedImage(it)
-            }
-        } else viewModel.customListLoad(filter) { searchModel = it }
+        ImageList(searchModel) {
+            navigationActions.navigateToSelectedImage(it)
+        }
     }
 }
 
@@ -114,12 +122,13 @@ fun SortingDropDownMenu(
 }
 
 @Composable
-fun CategoriesDropDownMenu(selected: String, itemList: List<String>, onChecked: (String) -> Unit) {
+fun CategoriesCheckBoxes(selected: String, itemList: List<String>, onChecked: (String) -> Unit) {
     if (selected.length == itemList.size) {
         val selectedItems = remember { selected.map { it == '1' }.toMutableStateList() }
         Row(
             Modifier
-                .background(MaterialTheme.colors.primary, MaterialTheme.shapes.medium),
+                .background(MaterialTheme.colors.primary, MaterialTheme.shapes.medium)
+                .height(34.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             itemList.forEachIndexed { index, s ->
@@ -135,5 +144,33 @@ fun CategoriesDropDownMenu(selected: String, itemList: List<String>, onChecked: 
             }
             Spacer(modifier = Modifier.width(12.dp))
         }
+    }
+}
+
+@Composable
+fun SearchTag(onChanged: (String) -> Unit) {
+    val findText = remember { mutableStateOf("") }
+    val textEnable = remember { mutableStateOf(false) }
+    IconButton(onClick = { textEnable.value = !textEnable.value }) {
+        Icon(
+            imageVector = Icons.Default.Search,
+            contentDescription = "Search",
+            tint = MaterialTheme.colors.onPrimary
+        )
+    }
+    if (textEnable.value) {
+        BasicTextField(
+            value = findText.value,
+            onValueChange = {
+                findText.value = it
+                onChanged(it)
+            },
+            textStyle = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onPrimary),
+            modifier = Modifier
+                .widthIn(1.dp, Dp.Infinity)
+                .background(MaterialTheme.colors.primaryVariant)
+                .padding(4.dp)
+//                .height(34.dp))
+        )
     }
 }
