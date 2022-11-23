@@ -25,10 +25,9 @@ fun SetupNavGraph(
     navController: NavHostController,
     startDestination: String = Screen.CustomList.route,
     retrofit: WallhavenApi,
-    navigationActions: WallpaperNavigationActions
+    navigationActions: WallpaperNavigationActions,
+    openDrawer: () -> Unit
 ) {
-    val imageDetailsViewModel: ImageDetailsViewModel =
-        viewModel(factory = ImageDetailsViewModelProvider(retrofit))
     AnimatedNavHost(navController = navController, startDestination = startDestination) {
 
         composable(
@@ -36,13 +35,19 @@ fun SetupNavGraph(
             arguments = listOf(navArgument("filter") {
                 type = NavType.StringType
                 defaultValue = ""
-            })
+            }),
+            enterTransition = {
+                slideInVertically(
+                    initialOffsetY = { 2000 }
+                )
+            }
         ) {
-            val customListViewModel:CustomListViewModel = viewModel(factory = CustomListViewModelProvider(retrofit))
-            customListViewModel.customListLoad()
+            val customListViewModel: CustomListViewModel =
+                viewModel(factory = CustomListViewModelProvider(retrofit))
             val argFilter = it.arguments?.getString("filter") ?: ""
             val filterModel = Gson().fromJson(argFilter, FiltersModel::class.java) ?: FiltersModel()
-            CustomListScreen(customListViewModel, navigationActions, filterModel)
+            customListViewModel.customListLoad(filterModel)
+            CustomListScreen(customListViewModel, navigationActions, filterModel, openDrawer)
 
         }
         composable(
@@ -50,12 +55,15 @@ fun SetupNavGraph(
             arguments = listOf(navArgument("imageId") { type = NavType.StringType }),
             enterTransition = {
                 slideInVertically(
-                    initialOffsetY = { 1800 }
+                    initialOffsetY = { 2000 }
                 )
             }
         ) {
             val imageId = it.arguments?.getString("imageId")
             imageId?.let {
+                val imageDetailsViewModel: ImageDetailsViewModel =
+                    viewModel(factory = ImageDetailsViewModelProvider(retrofit))
+                imageDetailsViewModel.loadImageInfo(imageId)
                 ImageDetailsScreen(
                     imageId = imageId,
                     viewModel = imageDetailsViewModel,

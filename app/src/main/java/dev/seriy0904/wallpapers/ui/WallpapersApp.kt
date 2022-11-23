@@ -1,17 +1,10 @@
 package dev.seriy0904.wallpapers.ui
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import dev.seriy0904.wallpapers.R
 import dev.seriy0904.wallpapers.data.api.WallhavenApi
 import dev.seriy0904.wallpapers.ui.graphs.Screen
 import dev.seriy0904.wallpapers.ui.graphs.SetupNavGraph
@@ -23,7 +16,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Wallpapers(retrofit: WallhavenApi) {
-    WallpapersTheme {
+    WallpapersTheme() {
         val navController = rememberAnimatedNavController()
         val navigationActions = remember(navController) {
             WallpaperNavigationActions(navController)
@@ -32,36 +25,14 @@ fun Wallpapers(retrofit: WallhavenApi) {
             Screen.CustomList.route
         )
         val coroutineScope = rememberCoroutineScope()
-        val scaffoldState = rememberScaffoldState()
+        val drawerState = rememberDrawerState(DrawerValue.Closed)
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         var appDrawerRoute by remember { mutableStateOf(items.first()) }
-        val route = navBackStackEntry?.destination?.route?: items.first()
-        val currentRoute = if(items.contains(route)) route else appDrawerRoute
-        if(currentRoute!=appDrawerRoute) appDrawerRoute = currentRoute
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = when  {
-                                route.startsWith(Screen.CustomList.route) -> stringResource(id = R.string.custom_list_label)
-                                route.startsWith(Screen.ImageDetails.route) -> stringResource(id = R.string.image_details_label)
-                                else -> "Wallpapers"
-                            }
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { coroutineScope.launch { scaffoldState.drawerState.open() } }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Open drawer menu"
-                            )
-                        }
-                    }, backgroundColor = MaterialTheme.colors.primaryVariant,
-                    contentColor = MaterialTheme.colors.onPrimary
-                )
-            },
+        val route = navBackStackEntry?.destination?.route ?: items.first()
+        val currentRoute = if (items.contains(route)) route else appDrawerRoute
+        if (currentRoute != appDrawerRoute) appDrawerRoute = currentRoute
+        ModalDrawer(
+            drawerState = drawerState,
             drawerContent = {
                 AppDrawer(
                     navigationActions = navigationActions,
@@ -69,17 +40,16 @@ fun Wallpapers(retrofit: WallhavenApi) {
                     items = items
                 ) {
                     appDrawerRoute = it
-                    coroutineScope.launch { scaffoldState.drawerState.close() }
+                    coroutineScope.launch { drawerState.close() }
                 }
             }
-        ) { scaffoldPadding ->
-            Box(Modifier.padding(scaffoldPadding)) {
-                SetupNavGraph(
-                    navController = navController,
-                    retrofit = retrofit,
-                    navigationActions = navigationActions
-                )
-            }
+        ) {
+            SetupNavGraph(
+                navController = navController,
+                retrofit = retrofit,
+                navigationActions = navigationActions,
+                openDrawer = { coroutineScope.launch { drawerState.open() } }
+            )
         }
     }
 }

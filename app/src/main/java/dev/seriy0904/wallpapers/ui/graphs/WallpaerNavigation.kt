@@ -21,16 +21,10 @@ sealed class Screen(val route: String) {
 class WallpaperNavigationActions(private val navController: NavHostController) {
     fun navigateToCustomList(searchFilter: FiltersModel = FiltersModel()) {
         val codeSearchFilter = Gson().toJson(searchFilter)
-        if ((navController.currentDestination?.route
+        if (!(navController.currentDestination?.route
                 ?: Screen.CustomList.route).startsWith(Screen.CustomList.route)
         ) {
-            navController.navigate(Screen.CustomList.passId(codeSearchFilter)) {
-                popUpTo(Screen.CustomList.route) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
+            navController.navigate(Screen.CustomList.passId(codeSearchFilter))
         } else
             navController.popBackStack(route = Screen.CustomList.route, inclusive = false)
     }
